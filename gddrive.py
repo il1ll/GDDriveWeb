@@ -6,18 +6,18 @@ def log(message, level, function=""):
 
     if function != "":
         if level == 0:
-            print(f"[{now.strftime("%H:%M:%S")}] {function}: " + message)
+            print(f"[{now.strftime('%H:%M:%S')}] {function}: " + message)
         elif level == 1:
-            print(f"[{now.strftime("%H:%M:%S")}] [WARNING] {function}: " + message)
+            print(f"[{now.strftime('%H:%M:%S')}] [WARNING] {function}: " + message)
         elif level == 2:
-            print(f"[{now.strftime("%H:%M:%S")}] [ERROR] {function}: " + message)
+            print(f"[{now.strftime('%H:%M:%S')}] [ERROR] {function}: " + message)
     else:
         if level == 0:
-            print(f"[{now.strftime("%H:%M:%S")}] " + message)
+            print(f"[{now.strftime('%H:%M:%S')}] " + message)
         elif level == 1:
-            print(f"[{now.strftime("%H:%M:%S")}] [WARNING] " + message)
+            print(f"[{now.strftime('%H:%M:%S')}] [WARNING] " + message)
         elif level == 2:
-            print(f"[{now.strftime("%H:%M:%S")}] [ERROR] " + message)
+            print(f"[{now.strftime('%H:%M:%S')}] [ERROR] " + message)
 
 headers = {
     "User-Agent": ""
