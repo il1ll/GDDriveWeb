@@ -1,4 +1,4 @@
-import base64, gzip, requests, hashlib, base64, json, random, string, zlib
+import base64, gzip, requests, hashlib, base64, json, random, string, zlib, os
 from datetime import datetime
 
 def log(message, level, function=""):
@@ -250,19 +250,17 @@ while True:
     elif x == "4":
         file_to_download = input("\nPlease provide the file you want to download: ")
 
-        level_string = downloadLevel(index_data[file_to_download]["level_id"])
+        level_string = downloadLevel(index_data[os.path.relpath(file_to_download)]["level_id"])
 
         if level_string == "":
             continue
         
         file_bytes = parse_level(level_string)
 
-        try:
-            open("Downloads/" + file_to_download, "x")
-        except:
-            pass
-        
-        with open("Downloads/" + file_to_download, "wb") as downloaded_file:
+        filename = os.path.basename(file_to_download)
+        os.makedirs("Downloads", exist_ok=True)
+
+        with open(os.path.join("Downloads", filename), "wb") as downloaded_file:
             downloaded_file.write(file_bytes)
             downloaded_file.flush()
     elif x == "1":
@@ -273,7 +271,7 @@ while True:
     elif x == "3":
         file_to_delete = input("\nPlease provide the file you want to delete: ")
 
-        success = deleteLevel(index_data[file_to_delete]["level_id"])
+        success = deleteLevel(index_data[os.path.relpath(file_to_delete)]["level_id"])
 
         if success == 0:
             del index_data[file_to_delete]
@@ -286,13 +284,17 @@ while True:
     elif x == "2":
         path = input("\nPlease provide the file you want to upload: ")
 
+        path = os.path.relpath(path)
+
         log("Uploading level...", 0)
 
         with open(path, "rb") as uploaded_file:
             level_string, object_count = make_level(uploaded_file.read())
             level_string = encode_level(level_string, False)
 
-            if not path in index_data:
+            path = os.path.basename(path)
+
+            if path not in index_data:
                 level_name = ''.join(random.choices(characters, k=20))
             else:
                 level_name = index_data[path]["level_name"]
@@ -306,7 +308,7 @@ while True:
                 "levelID": 0,
                 "levelName": level_name,
                 "levelDesc": "",
-                "levelVersion": 1,
+                "levelVersion": 999,
                 "levelLength": 0,
                 "audioTrack": 0,
                 "auto": 0,
