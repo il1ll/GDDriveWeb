@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <link rel="icon" type="image/png" href="https://static.wikia.nocookie.net/logopedia/images/4/41/Geometry_Dash_Icon.svg"/>
+    <title>GDDrive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0d0f14;
+            --surface: #13161d;
+            --surface-raised: #181c25;
+            --border: #232735;
+            --border-hover: #2e3347;
+            --text-primary: #dde3f0;
+            --text-secondary: #6b7491;
+            --text-muted: #3f4560;
+            --accent: #4f7fff;
+            --accent-dim: rgba(79, 127, 255, 0.12);
+            --accent-glow: rgba(79, 127, 255, 0.25);
+            --green: #3ecf8e;
+            --green-dim: rgba(62, 207, 142, 0.12);
+            --red: #e05c5c;
+            --red-dim: rgba(224, 92, 92, 0.12);
+            --radius-sm: 8px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        ::selection {
+            background: var(--accent-glow);
+            color: var(--text-primary);
+        }
+
+        nav {
+            background: rgba(13, 15, 20, 0.9);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .logo strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .logo-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            margin: 0 6px 1px;
+            vertical-align: middle;
+        }
+
+        .tab-group {
+            display: flex;
+            gap: 2px;
+            background: var(--surface);
+            padding: 3px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            padding: 7px 18px;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            transition: background 0.15s, color 0.15s;
+            letter-spacing: 0.01em;
+        }
+
+        .tab-btn.active {
+            background: var(--surface-raised);
+            color: var(--text-primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 28px 60px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+        }
+
+        .login-card {
+            max-width: 420px;
+            margin: 72px auto 0;
+            padding: 36px;
+        }
+
+        .upload-card,
+        .download-card {
+            max-width: 600px;
+            margin: 48px auto 0;
+            padding: 36px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 28px;
+            letter-spacing: -0.01em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 7px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        select option {
+            background: var(--surface);
+        }
+
+        .file-dropzone {
+            border: 1.5px dashed var(--border-hover);
+            border-radius: var(--radius-lg);
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+            background: var(--bg);
+        }
+
+        .file-dropzone.drag-over {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .file-dropzone:hover {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+
+        .file-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 11px 24px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+            letter-spacing: 0.01em;
+        }
+
+        .btn:hover { opacity: 0.88; }
+        .btn:active { transform: scale(0.99); }
+
+        .btn-green {
+            background: var(--green);
+            color: #0d1a12;
+        }
+
+        button[type="submit"] {
+            display: block;
+            width: 100%;
+            padding: 11px 24px;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+            letter-spacing: 0.01em;
+            margin-top: 4px;
+        }
+
+        button[type="submit"]:hover { opacity: 0.88; }
+        button[type="submit"]:active { transform: scale(0.99); }
+
+        .btn-secondary button[type="submit"],
+        form.btn-secondary-form button[type="submit"] {
+            background: var(--green);
+            color: #0d1a12;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeUp 0.2s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 48px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .count-badge {
+            background: var(--surface-raised);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 3px 12px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: 'DM Mono', monospace;
+        }
+
+        .grid-files {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 14px;
+            margin-top: 4px;
+        }
+
+        .file-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .file-item:hover {
+            border-color: var(--border-hover);
+            background: var(--surface-raised);
+        }
+
+        .file-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            word-break: break-all;
+            margin-bottom: 6px;
+        }
+
+        .level-name-row {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .level-name-label {
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .file-id {
+            font-size: 11px;
+            font-family: 'DM Mono', monospace;
+            color: var(--text-muted);
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 3px 8px;
+            display: inline-block;
+            margin-bottom: 14px;
+        }
+
+        /* حاوية الأزرار الرئيسية في الكرت */
+        .file-actions {
+            display: flex;
+            flex-direction: column; /* جعل العناصر تحت بعضها البعض */
+            gap: 10px;
+        }
+
+        .action-btns-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btns-row form {
+            flex: 1;
+        }
+
+        .file-actions button[type="submit"] {
+            padding: 8px 12px;
+            font-size: 12px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid transparent;
+            border-radius: var(--radius-sm);
+            width: 100%;
+            margin-top: 0;
+        }
+
+        .file-actions button[type="submit"]:hover {
+            background: var(--accent);
+            color: #fff;
+            opacity: 1;
+        }
+
+        .file-actions .btn-del button[type="submit"] {
+            background: var(--red-dim);
+            color: var(--red);
+        }
+
+        .file-actions .btn-del button[type="submit"]:hover {
+            background: var(--red);
+            color: #fff;
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 64px 24px;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.4;
+        }
+
+        .row-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        /* تحسين مظهر شريط التحميل */
+        .progress-container {
+            display: none;
+            margin-top: 8px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            height: 6px;
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+        }
+
+        .progress-fill {
+            background: var(--accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.15s ease;
+        }
+
+        .progress-text {
+            display: none;
+            font-size: 10px;
+            color: var(--accent);
+            text-align: center;
+            margin-top: 4px;
+            font-family: 'DM Mono', monospace;
+            font-weight: 500;
+        }
+
+        @media (max-width: 640px) {
+            .nav-inner { padding: 12px 16px; }
+            .container { padding: 0 16px 48px; }
+            .login-card, .upload-card, .download-card { padding: 24px 20px; }
+            .row-2cols { grid-template-columns: 1fr; }
+            .grid-files { grid-template-columns: 1fr; }
+            .tab-btn { padding: 7px 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-inner">
+        <div class="logo"><strong>GD</strong><span class="logo-dot"></span>Drive</div>
+        {% if credentials %}
+        <div class="tab-group">
+            <button onclick="switchTab('upload')" id="tab-upload-btn" class="tab-btn active">Upload</button>
+            <button onclick="switchTab('download')" id="tab-download-btn" class="tab-btn">Download</button>
+            <button onclick="switchTab('manager')" id="tab-manager-btn" class="tab-btn">Library</button>
+        </div>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container">
+    {% if not credentials %}
+    <div class="card login-card">
+        <div class="card-title">Sign in to GDDrive</div>
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required autocomplete="username" placeholder="Your GD username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+                <label>Account ID</label>
+                <input type="text" name="account_id" required placeholder="12345678">
+            </div>
+            <div class="divider"></div>
+            <button type="submit">Continue</button>
+        </form>
+    </div>
+
+    {% else %}
+
+    <div id="upload-tab" class="tab-content active">
+        <div class="card upload-card">
+            <div class="card-title">Upload File</div>
+            <form action="/upload" method="POST" enctype="multipart/form-data" onsubmit="handleUpload(event)">
+                <div class="form-group">
+                    <label>File</label>
+                    <div class="file-dropzone" id="fileDropzone">
+                        <div class="file-name" id="fileNameDisplay">Choose a file or drag & drop</div>
+                        <div class="file-hint">Drag & drop anywhere or click to browse</div>
+                        <input type="file" name="file" id="fileInput" style="display:none;" onchange="updateFileName()" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Level Name</label>
+                    <input type="text" name="level_name" required placeholder="New File XD">
+                </div>
+                <div class="row-2cols">
+                    <div class="form-group">
+                        <label>Song ID</label>
+                        <input type="number" name="song_id" value="763439">
+                    </div>
+                    <div class="form-group">
+                        <label>Stars</label>
+                        <input type="number" name="requested_stars" value="10">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Visibility</label>
+                    <select name="unlisted">
+                        <option value="0">Public</option>
+                        <option value="2">Unlisted</option>
+                    </select>
+                </div>
+                <div class="divider"></div>
+                <div class="progress-container">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">0%</div>
+                <button type="submit" id="upload-btn">Upload to Geometry Dash</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="download-tab" class="tab-content">
+        <div class="card download-card">
+            <div class="card-title">Download by Level ID</div>
+            <form action="/download_id" method="POST" onsubmit="handleDownload(event, this)">
+                <div class="form-group">
+                    <label>Level ID</label>
+                    <input type="number" name="level_id" required placeholder="Enter level ID">
+                </div>
+                <div class="form-group">
+                    <label>Save As</label>
+                    <input type="text" name="file_name" required placeholder="filename.dat">
+                </div>
+                <div class="divider"></div>
+                <div class="progress-container">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="progress-text">0%</div>
+                <button type="submit" style="background: var(--green); color: #0d1a12;">Download</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="manager-tab" class="tab-content">
+        <div class="section-header">
+            <div class="section-title">File Library</div>
+            <div class="count-badge">{{ index_data|length }} file(s)</div>
+        </div>
+
+        {% if index_data %}
+        <div class="grid-files">
+            {% for filename, data in index_data.items() %}
+            <div class="file-item">
+                <div class="file-item-name">{{ filename }}</div>
+                <div class="level-name-row">
+                    <span class="level-name-label">level name:</span>
+                    {{ data.level_name }}
+                </div>
+                <div class="file-id">ID: {{ data.level_id }}</div>
+                
+                <div class="file-actions">
+                    <div class="action-btns-row">
+                        <form action="/download_id" method="POST" onsubmit="handleDownload(event, this)">
+                            <input type="hidden" name="level_id" value="{{ data.level_id }}">
+                            <input type="hidden" name="file_name" value="{{ filename }}">
+                            <button type="submit">Download</button>
+                        </form>
+                        <form action="/delete" method="POST" class="btn-del">
+                            <input type="hidden" name="filename" value="{{ filename }}">
+                            <input type="hidden" name="level_id" value="{{ data.level_id }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">0%</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📁</div>
+            <div>No files yet</div>
+            <div style="margin-top: 6px; font-size: 12px;">Upload something to get started</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabName + '-tab').classList.add('active');
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-' + tabName + '-btn').classList.add('active');
+    }
+
+    function updateFileName() {
+        const input = document.getElementById('fileInput');
+        const display = document.getElementById('fileNameDisplay');
+        if (input.files && input.files.length > 0) {
+            display.textContent = input.files[0].name;
+        } else {
+            display.textContent = 'Choose a file or drag & drop';
+        }
+    }
+
+    function handleUpload(event) {
+        event.preventDefault();
+        const form = event.target;
+        const btn = form.querySelector('button[type="submit"]');
+        const progressContainer = form.querySelector('.progress-container');
+        const progressFill = form.querySelector('.progress-fill');
+        const progressText = form.querySelector('.progress-text');
+
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        progressContainer.style.display = 'block';
+        progressText.style.display = 'block';
+        progressFill.style.width = '0%';
+        progressText.innerText = '0%';
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', form.action, true);
+
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progressFill.style.width = percent + '%';
+                progressText.innerText = percent + '%';
+                if (percent >= 100) {
+                    progressText.innerText = 'Processing...';
+                }
+            }
+        };
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                progressText.innerText = 'Success!';
+                setTimeout(() => window.location.reload(), 500);
+            } else {
+                progressText.innerText = 'Error occurred.';
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        };
+
+        xhr.send(new FormData(form));
+    }
+
+    function handleDownload(event, form) {
+        event.preventDefault();
+        const btn = form.querySelector('button[type="submit"]');
+        const container = form.closest('.file-actions') || form;
+        const progressContainer = container.querySelector('.progress-container');
+        const progressFill = container.querySelector('.progress-fill');
+        const progressText = container.querySelector('.progress-text');
+
+        const formData = new FormData(form);
+        const filename = formData.get('file_name');
+
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        progressContainer.style.display = 'block';
+        progressText.style.display = 'block';
+        progressFill.style.width = '0%';
+        progressText.innerText = 'Starting...';
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', form.action, true);
+        xhr.responseType = 'blob';
+
+        xhr.onprogress = function(e) {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                progressFill.style.width = percent + '%';
+                progressText.innerText = percent + '%';
+            } else {
+                progressText.innerText = 'Downloading...';
+            }
+        };
+
+        xhr.onload = function() {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            if (xhr.status === 200) {
+                progressFill.style.width = '100%';
+                progressText.innerText = 'Complete!';
+                const blob = xhr.response;
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                setTimeout(() => {
+                    progressContainer.style.display = 'none';
+                    progressText.style.display = 'none';
+                }, 2000);
+            } else {
+                progressText.innerText = 'Failed.';
+            }
+        };
+
+        xhr.send(formData);
+    }
+
+    const dropzone = document.getElementById('fileDropzone');
+    const fileInput = document.getElementById('fileInput');
+
+    if (dropzone) {
+        dropzone.addEventListener('click', function(e) {
+            if (e.target === dropzone || dropzone.contains(e.target)) {
+                fileInput.click();
+            }
+        });
+
+        dropzone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('drag-over');
+        });
+
+        dropzone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('drag-over');
+        });
+
+        dropzone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                updateFileName();
+                const changeEvent = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(changeEvent);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
